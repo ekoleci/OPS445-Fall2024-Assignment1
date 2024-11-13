@@ -1,0 +1,79 @@
+name: Autograding Tests
+'on':
+- workflow_dispatch
+- repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: test leap
+      id: test-leap
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: test leap
+        setup-command: ''
+        command: python3 ./checkA1.py -f -v TestLeap
+        timeout: 10
+        max-score: 2
+    - name: test before
+      id: test-before
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: test before
+        setup-command: ''
+        command: python3 ./checkA1.py -f -v TestBefore
+        timeout: 10
+        max-score: 3
+    - name: test leap
+      id: test-leap
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: test leap
+        setup-command: ''
+        command: python3 ./checkA1.py -f -v TestLeap
+        timeout: 10
+        max-score: 2
+    - name: test mon max
+      id: test-mon-max
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: test mon max
+        setup-command: ''
+        command: python3 ./checkA1.py -f -v TestMonMax
+        timeout: 10
+        max-score: 2
+    - name: test valid date
+      id: test-valid-date
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: test valid date
+        setup-command: ''
+        command: python3 ./checkA1.py -f -v TestValidDate
+        timeout: 10
+        max-score: 4
+    - name: test day iter
+      id: test-day-iter
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: test day iter
+        setup-command: ''
+        command: python3 ./checkA1.py -f -v TestDayIter
+        timeout: 10
+        max-score: 6
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        TEST-LEAP_RESULTS: "${{steps.test-leap.outputs.result}}"
+        TEST-BEFORE_RESULTS: "${{steps.test-before.outputs.result}}"
+        TEST-MON-MAX_RESULTS: "${{steps.test-mon-max.outputs.result}}"
+        TEST-VALID-DATE_RESULTS: "${{steps.test-valid-date.outputs.result}}"
+        TEST-DAY-ITER_RESULTS: "${{steps.test-day-iter.outputs.result}}"
+      with:
+        runners: test-leap,test-before,test-leap,test-mon-max,test-valid-date,test-day-iter
